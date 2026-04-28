@@ -7,9 +7,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # ── llama.cpp path ──────────────────────────────────────────────────────────────
 if(NOT DEFINED LLAMA_CPP_DIR)
-  get_filename_component(_parent "${CMAKE_SOURCE_DIR}" DIRECTORY)
-  get_filename_component(_desktop "${_parent}" DIRECTORY)
-  set(LLAMA_CPP_DIR "${_desktop}/turboquant-godot/thirdparty/llama_cpp")
+  set(LLAMA_CPP_DIR "${CMAKE_SOURCE_DIR}/thirdparty/llama_cpp")
 endif()
 
 message(STATUS "LLAMA_CPP_DIR = ${LLAMA_CPP_DIR}")

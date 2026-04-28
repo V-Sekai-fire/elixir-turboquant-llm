@@ -1,8 +1,7 @@
 PRIV_DIR   = $(MIX_APP_PATH)/priv
 BUILD_DIR  = _build/nif_cmake
 
-# Default: look for turboquant-godot as a sibling of the rpg repo
-LLAMA_CPP_DIR ?= $(abspath $(dir $(firstword $(MAKEFILE_LIST)))/../../turboquant-godot/thirdparty/llama_cpp)
+LLAMA_CPP_DIR ?= $(abspath $(dir $(firstword $(MAKEFILE_LIST)))/thirdparty/llama_cpp)
 
 UNAME := $(shell uname -s)
 ifeq ($(UNAME), Darwin)
