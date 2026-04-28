@@ -27,12 +27,13 @@ defmodule TurboquantLlm.MixProject do
       Linux: cmake, a C++17 compiler, and optionally the Vulkan SDK.
       Windows: MSYS2 with cmake and Ninja installed.
       """,
+      test_coverage: [tool: ExCoveralls],
       deps: deps()
     ]
   end
 
   def cli do
-    [preferred_envs: [propcheck: :test]]
+    [preferred_envs: [propcheck: :test, coveralls: :test, "coveralls.detail": :test, "coveralls.html": :test]]
   end
 
   def application do
@@ -55,7 +56,8 @@ defmodule TurboquantLlm.MixProject do
       {:fine, "0.1.6"},
       {:jason, "~> 1.4"},
       {:propcheck, "~> 1.4", only: [:test, :dev], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
+      {:excoveralls, "~> 0.18", only: [:test], runtime: false}
     ]
   end
 end
