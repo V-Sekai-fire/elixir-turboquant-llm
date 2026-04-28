@@ -27,7 +27,6 @@ defmodule TurboquantLlm.Session do
 
   use GenServer
   require Logger
-  alias TurboquantLlm.NIF
 
   @default_opts [
     n_gpu_layers:   -1,
@@ -177,7 +176,7 @@ defmodule TurboquantLlm.Session do
     n_threads = Keyword.get(opts, :n_threads, max(1, System.schedulers_online() - 1))
 
     try do
-      model = NIF.model_load(
+      model = nif().model_load(
         opts[:model_path],
         opts[:n_gpu_layers],
         opts[:use_mmap],
@@ -185,7 +184,7 @@ defmodule TurboquantLlm.Session do
         opts[:mmproj_path]
       )
 
-      n_ctx_train = NIF.model_n_ctx_train(model)
+      n_ctx_train = nif().model_n_ctx_train(model)
       if opts[:n_ctx] > n_ctx_train do
         Logger.warning(
           "TurboquantSession: n_ctx (#{opts[:n_ctx]}) exceeds model training context " <>
@@ -193,7 +192,7 @@ defmodule TurboquantLlm.Session do
         )
       end
 
-      ctx = NIF.context_create(
+      ctx = nif().context_create(
         model,
         opts[:n_ctx],
         n_threads,
@@ -217,7 +216,8 @@ defmodule TurboquantLlm.Session do
       }}
     rescue
       e ->
-        {:stop, {:load_failed, Exception.message(e)}, %{status: :error}}
+        Logger.error("TurboquantSession load failed: #{Exception.message(e)}")
+        {:noreply, %{status: :error}}
     end
   end
 
@@ -227,20 +227,20 @@ defmodule TurboquantLlm.Session do
   end
 
   def handle_call({:fits_in_context, text}, _from, %{status: :ready} = state) do
-    count = NIF.tokenize_count(state.model, text)
+    count = nif().tokenize_count(state.model, text)
     {:reply, count < state.n_ctx, state}
   end
 
   def handle_call(:model_n_ctx_train, _from, %{status: :ready} = state) do
-    {:reply, NIF.model_n_ctx_train(state.model), state}
+    {:reply, nif().model_n_ctx_train(state.model), state}
   end
 
   def handle_call(:model_desc, _from, %{status: :ready} = state) do
-    {:reply, NIF.model_desc(state.model), state}
+    {:reply, nif().model_desc(state.model), state}
   end
 
   def handle_call({:tokenize_count, text}, _from, %{status: :ready} = state) do
-    {:reply, NIF.tokenize_count(state.model, text), state}
+    {:reply, nif().tokenize_count(state.model, text), state}
   end
 
   def handle_call(:loading?, _from, state) do
@@ -264,7 +264,7 @@ defmodule TurboquantLlm.Session do
     Task.start(fn ->
       result =
         try do
-          response = NIF.chat_complete(
+          response = nif().chat_complete(
             ctx, msgs_json,
             p.temperature, p.max_tokens, p.top_k, p.top_p, p.repeat_penalty
           )
@@ -289,7 +289,7 @@ defmodule TurboquantLlm.Session do
     # even if the BEAM-level NIF call itself raises before C++ error handling runs.
     Task.start(fn ->
       try do
-        NIF.chat_stream(
+        nif().chat_stream(
           ctx, subscriber, msgs_json,
           p.temperature, p.max_tokens, p.top_k, p.top_p, p.repeat_penalty
         )
@@ -302,13 +302,13 @@ defmodule TurboquantLlm.Session do
   end
 
   def handle_call(:reset, _from, state) do
-    NIF.context_reset(state.ctx)
+    nif().context_reset(state.ctx)
     {:reply, :ok, state}
   end
 
   @impl true
   def handle_cast(:abort, %{status: :ready} = state) do
-    NIF.context_abort(state.ctx)
+    nif().context_abort(state.ctx)
     {:noreply, state}
   end
 
@@ -323,5 +323,9 @@ defmodule TurboquantLlm.Session do
     overrides
     |> Enum.into(%{})
     |> then(&Map.merge(defaults, &1))
+  end
+
+  defp nif do
+    Application.get_env(:elixir_turboquant_llm, :nif_module, TurboquantLlm.NIF)
   end
 end

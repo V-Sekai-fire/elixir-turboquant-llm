@@ -1,4 +1,5 @@
 defmodule TurboquantLlm.NIF do
+  @behaviour TurboquantLlm.NIF.Behaviour
   @on_load :__on_load__
 
   def __on_load__ do
