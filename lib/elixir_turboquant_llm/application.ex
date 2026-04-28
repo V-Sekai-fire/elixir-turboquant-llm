@@ -1,4 +1,4 @@
-defmodule MultiplayerFabric.Turboquant.Application do
+defmodule TurboquantLlm.Application do
   use Application
   require Logger
 
@@ -7,7 +7,7 @@ defmodule MultiplayerFabric.Turboquant.Application do
     case load_nif_backend() do
       :ok ->
         children = []
-        opts = [strategy: :one_for_one, name: MultiplayerFabric.Turboquant.Supervisor]
+        opts = [strategy: :one_for_one, name: TurboquantLlm.Supervisor]
         Supervisor.start_link(children, opts)
 
       {:error, reason} ->
@@ -18,7 +18,7 @@ defmodule MultiplayerFabric.Turboquant.Application do
   @impl true
   def stop(_state) do
     try do
-      MultiplayerFabric.Turboquant.NIF.backend_free()
+      TurboquantLlm.NIF.backend_free()
     rescue
       _ -> :ok
     end
@@ -28,7 +28,7 @@ defmodule MultiplayerFabric.Turboquant.Application do
 
   defp load_nif_backend do
     try do
-      MultiplayerFabric.Turboquant.NIF.backend_init()
+      TurboquantLlm.NIF.backend_init()
       :ok
     rescue
       e in ErlangError ->

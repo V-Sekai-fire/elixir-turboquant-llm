@@ -563,4 +563,4 @@ void chat_stream(ErlNifEnv *env,
 }
 FINE_NIF(chat_stream, ERL_NIF_DIRTY_JOB_CPU_BOUND);
 
-FINE_INIT("Elixir.MultiplayerFabric.Turboquant.NIF");
+FINE_INIT("Elixir.TurboquantLlm.NIF");

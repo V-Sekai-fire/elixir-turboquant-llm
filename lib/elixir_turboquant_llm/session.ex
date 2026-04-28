@@ -1,4 +1,4 @@
-defmodule MultiplayerFabric.Turboquant.Session do
+defmodule TurboquantLlm.Session do
   @moduledoc """
   GenServer that owns a single LLM model + context pair and serialises
   inference requests for one NPC / character session.
@@ -27,7 +27,7 @@ defmodule MultiplayerFabric.Turboquant.Session do
 
   use GenServer
   require Logger
-  alias MultiplayerFabric.Turboquant.NIF
+  alias TurboquantLlm.NIF
 
   @default_opts [
     n_gpu_layers:   -1,

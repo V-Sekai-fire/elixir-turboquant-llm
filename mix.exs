@@ -1,9 +1,9 @@
-defmodule MultiplayerFabricTurboquant.MixProject do
+defmodule TurboquantLlm.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :multiplayer_fabric_turboquant,
+      app: :elixir_turboquant_llm,
       version: "0.1.0",
       elixir: "~> 1.17",
       compilers: [:elixir_make] ++ Mix.compilers(),
@@ -37,7 +37,7 @@ defmodule MultiplayerFabricTurboquant.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {MultiplayerFabric.Turboquant.Application, []}
+      mod: {TurboquantLlm.Application, []}
     ]
   end
 

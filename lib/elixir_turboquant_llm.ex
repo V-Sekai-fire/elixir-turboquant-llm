@@ -1,4 +1,4 @@
-defmodule MultiplayerFabric.Turboquant do
+defmodule TurboquantLlm do
   @moduledoc """
   llama.cpp bound to Elixir via FINE NIFs.
 
@@ -8,7 +8,7 @@ defmodule MultiplayerFabric.Turboquant do
   ## Quick start
 
       {:ok, session} =
-        MultiplayerFabric.Turboquant.Session.start_link(
+        TurboquantLlm.Session.start_link(
           model_path:   "/models/my-model.gguf",
           n_gpu_layers: -1,
           n_ctx:        4096,
@@ -17,18 +17,18 @@ defmodule MultiplayerFabric.Turboquant do
         )
 
       {:ok, reply} =
-        MultiplayerFabric.Turboquant.chat(session, [
+        TurboquantLlm.chat(session, [
           %{role: "system",  content: "You are a helpful NPC."},
           %{role: "user",    content: "What quests are available?"}
         ])
 
       # Streaming
-      MultiplayerFabric.Turboquant.stream_chat(session, messages)
+      TurboquantLlm.stream_chat(session, messages)
       |> Stream.each(&IO.write/1)
       |> Stream.run()
   """
 
-  alias MultiplayerFabric.Turboquant.Session
+  alias TurboquantLlm.Session
 
   @doc "Start a new inference session. See `Session.start_link/1` for options."
   defdelegate start_session(opts), to: Session, as: :start_link

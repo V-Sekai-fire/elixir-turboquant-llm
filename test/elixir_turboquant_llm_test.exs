@@ -1,8 +1,8 @@
-defmodule MultiplayerFabricTurboquantTest do
+defmodule TurboquantLlmTest do
   use ExUnit.Case, async: false
 
-  alias MultiplayerFabric.Turboquant
-  alias MultiplayerFabric.Turboquant.Session
+  alias TurboquantLlm
+  alias TurboquantLlm.Session
 
   @moduletag :integration
 

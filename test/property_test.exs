@@ -1,8 +1,8 @@
-defmodule MultiplayerFabricTurboquant.PropertyTest do
+defmodule TurboquantLlm.PropertyTest do
   use ExUnit.Case, async: false
   use PropCheck
 
-  alias MultiplayerFabric.Turboquant.Session
+  alias TurboquantLlm.Session
 
   # ── Generators ────────────────────────────────────────────────────────────────
 

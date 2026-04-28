@@ -1,9 +1,9 @@
-defmodule MultiplayerFabric.Turboquant.NIF do
+defmodule TurboquantLlm.NIF do
   @on_load :__on_load__
 
   def __on_load__ do
     path =
-      :code.priv_dir(:multiplayer_fabric_turboquant)
+      :code.priv_dir(:elixir_turboquant_llm)
       |> to_string()
       |> Kernel.<>("/libturboquant_nif")
 
