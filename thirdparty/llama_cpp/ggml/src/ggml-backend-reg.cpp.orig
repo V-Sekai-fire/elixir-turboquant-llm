@@ -389,7 +389,6 @@ ggml_backend_t ggml_backend_init_best(void) {
 }
 
 // Dynamic loading
-#ifdef GGML_BACKEND_DL
 ggml_backend_reg_t ggml_backend_load(const char * path) {
     return get_reg().load_backend(path, false);
 }
@@ -591,12 +590,3 @@ void ggml_backend_load_all_from_path(const char * dir_path) {
         ggml_backend_load(backend_path);
     }
 }
-
-#else // GGML_BACKEND_DL
-
-ggml_backend_reg_t ggml_backend_load(const char * path) { (void)path; return nullptr; }
-void ggml_backend_unload(ggml_backend_reg_t reg) { (void)reg; }
-void ggml_backend_load_all() {}
-void ggml_backend_load_all_from_path(const char * dir_path) { (void)dir_path; }
-
-#endif // GGML_BACKEND_DL

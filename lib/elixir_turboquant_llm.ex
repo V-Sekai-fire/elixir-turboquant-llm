@@ -28,7 +28,49 @@ defmodule TurboquantLlm do
       |> Stream.run()
   """
 
-  alias TurboquantLlm.Session
+  alias TurboquantLlm.{Downloader, Session}
+
+  # Default model: Qwen3.5-27B reasoning-distilled, Q4_K_M quant (~15 GB).
+  # Same file the turboquant-project Godot app downloads by default.
+  @default_model_url "https://huggingface.co/mradermacher/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled-i1-GGUF/resolve/main/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled.i1-Q4_K_M.gguf"
+
+  @doc "The default model URL (Qwen3.5-27B Q4_K_M reasoning distil)."
+  def default_model_url, do: @default_model_url
+
+  @doc """
+  Local cache directory for downloaded models.
+  Overridable via `TURBOQUANT_CACHE_DIR` env var.
+  """
+  def cache_dir do
+    System.get_env("TURBOQUANT_CACHE_DIR") ||
+      Path.join([System.user_home!(), ".cache", "turboquant-llm"])
+  end
+
+  @doc """
+  Downloads `url` (default: `default_model_url/0`) to `cache_dir/0`.
+  Skips the download if the file already exists.
+
+  Returns `{:ok, local_path}` or `{:error, reason}`.
+
+  ## Options
+    * `:on_progress` — `fun(bytes_received, total_bytes)` for progress reporting.
+    * `:url` — override the download URL.
+
+  ## Example
+
+      {:ok, path} = TurboquantLlm.download_model(
+        on_progress: fn recv, total ->
+          IO.write("\\r\#{Float.round(recv / total * 100, 1)}%")
+        end
+      )
+      {:ok, session} = TurboquantLlm.start_session(model_path: path, n_gpu_layers: -1)
+  """
+  def download_model(opts \\ []) do
+    url  = Keyword.get(opts, :url, @default_model_url)
+    name = url |> URI.parse() |> Map.fetch!(:path) |> Path.basename()
+    dest = Path.join(cache_dir(), name)
+    Downloader.download(url, dest, opts)
+  end
 
   @doc "Start a new inference session. See `Session.start_link/1` for options."
   defdelegate start_session(opts), to: Session, as: :start_link
