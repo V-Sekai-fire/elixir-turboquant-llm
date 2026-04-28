@@ -24,9 +24,17 @@ set(LLAMA_BUILD_TESTS       OFF CACHE BOOL "" FORCE)
 set(LLAMA_BUILD_SERVER      OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS       OFF)
 
+# LLAMA_INSTALL_VERSION is set inside llama_cpp's CMakeLists.txt but mtmd
+# references it when added as a standalone subdirectory. Define a fallback
+# so set_target_properties(... VERSION ...) doesn't receive an empty string.
+if(NOT DEFINED LLAMA_INSTALL_VERSION)
+  set(LLAMA_INSTALL_VERSION "0.0.0")
+endif()
+
 add_subdirectory(${LLAMA_CPP_DIR} ${CMAKE_BINARY_DIR}/llama_build EXCLUDE_FROM_ALL)
 
-# mtmd (multimodal) library — only if the llama_cpp tree didn't already add it
+# After the main tree runs, LLAMA_INSTALL_VERSION is properly set.
+# mtmd (multimodal) library — only if the llama_cpp tree didn't already add it.
 if(NOT TARGET mtmd)
   add_subdirectory(${LLAMA_CPP_DIR}/tools/mtmd ${CMAKE_BINARY_DIR}/mtmd_build EXCLUDE_FROM_ALL)
 endif()

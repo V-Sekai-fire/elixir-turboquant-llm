@@ -57,10 +57,10 @@ static ggml_type parse_cache_type(const std::string &name) {
 
 // ── Backend lifecycle ───────────────────────────────────────────────────────────
 
-void backend_init(ErlNifEnv *env) { llama_backend_init(); }
+fine::Atom backend_init(ErlNifEnv *env) { llama_backend_init(); return fine::Atom("ok"); }
 FINE_NIF(backend_init, 0);
 
-void backend_free(ErlNifEnv *env) { llama_backend_free(); }
+fine::Atom backend_free(ErlNifEnv *env) { llama_backend_free(); return fine::Atom("ok"); }
 FINE_NIF(backend_free, 0);
 
 // ── Model loading (IO-bound dirty NIF) ─────────────────────────────────────────
@@ -147,17 +147,19 @@ FINE_NIF(context_create, ERL_NIF_DIRTY_JOB_IO_BOUND);
 
 // ── Context control ─────────────────────────────────────────────────────────────
 
-void context_reset(ErlNifEnv *env, fine::ResourcePtr<LlamaContext> ctx) {
+fine::Atom context_reset(ErlNifEnv *env, fine::ResourcePtr<LlamaContext> ctx) {
     if (ctx->ctx) {
         llama_memory_clear(llama_get_memory(ctx->ctx), true);
     }
     ctx->cached_tokens.clear();
     ctx->abort_flag.store(false, std::memory_order_relaxed);
+    return fine::Atom("ok");
 }
 FINE_NIF(context_reset, 0);
 
-void context_abort(ErlNifEnv *env, fine::ResourcePtr<LlamaContext> ctx) {
+fine::Atom context_abort(ErlNifEnv *env, fine::ResourcePtr<LlamaContext> ctx) {
     ctx->abort_flag.store(true, std::memory_order_relaxed);
+    return fine::Atom("ok");
 }
 FINE_NIF(context_abort, 0);
 
@@ -522,7 +524,7 @@ FINE_NIF(chat_complete, ERL_NIF_DIRTY_JOB_CPU_BOUND);
 
 // ── chat_stream – sends {:turboquant_token, bin} + {:turboquant_done, bin} ──────
 
-void chat_stream(ErlNifEnv *env,
+fine::Atom chat_stream(ErlNifEnv *env,
     fine::ResourcePtr<LlamaContext> ctx,
     ErlNifPid   subscriber,
     std::string messages_json,
@@ -560,6 +562,7 @@ void chat_stream(ErlNifEnv *env,
     } catch (const std::exception &e) {
         send_binary("turboquant_error", std::string(e.what()));
     }
+    return fine::Atom("ok");
 }
 FINE_NIF(chat_stream, ERL_NIF_DIRTY_JOB_CPU_BOUND);
 

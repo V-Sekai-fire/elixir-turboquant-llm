@@ -7,8 +7,9 @@ defmodule TurboquantLlm.MixProject do
       version: "0.1.0",
       elixir: "~> 1.17",
       compilers: [:elixir_make] ++ Mix.compilers(),
-      make_targets: ["all"],
-      make_clean: ["clean"],
+      make_executable: "cmake",
+      make_targets: ["-P", "build.cmake"],
+      make_clean: ["-P", "clean.cmake"],
       make_env: make_env(),
       make_error_message: """
 
@@ -53,7 +54,8 @@ defmodule TurboquantLlm.MixProject do
       {:elixir_make, "~> 0.9"},
       {:fine, "0.1.6"},
       {:jason, "~> 1.4"},
-      {:propcheck, "~> 1.4", only: [:test, :dev], runtime: false}
+      {:propcheck, "~> 1.4", only: [:test, :dev], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false}
     ]
   end
 end

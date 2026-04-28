@@ -2,11 +2,7 @@ defmodule TurboquantLlm.NIF do
   @on_load :__on_load__
 
   def __on_load__ do
-    path =
-      :code.priv_dir(:elixir_turboquant_llm)
-      |> to_string()
-      |> Kernel.<>("/libturboquant_nif")
-
+    path = :filename.join(:code.priv_dir(:elixir_turboquant_llm), ~c"libturboquant_nif")
     :erlang.load_nif(path, 0)
   end
 
