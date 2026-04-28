@@ -1,0 +1,11 @@
+CompileFlags:
+  Add:
+    - "-std=c++17"
+    - "-I/Users/ernest.lee/Desktop/multiplayer-fabric-rpg/multiplayer-fabric-turboquant/standalone"
+    - "-I/opt/homebrew/Cellar/erlang/28.5/lib/erlang/usr/include"
+    - "-I/Users/ernest.lee/Desktop/turboquant-godot/thirdparty/llama_cpp/include"
+    - "-I/Users/ernest.lee/Desktop/turboquant-godot/thirdparty/llama_cpp/ggml/include"
+    - "-I/Users/ernest.lee/Desktop/turboquant-godot/thirdparty/llama_cpp/vendor"
+    - "-I/Users/ernest.lee/Desktop/turboquant-godot/thirdparty/llama_cpp/tools/mtmd"
+  Remove:
+    - "-W*"
